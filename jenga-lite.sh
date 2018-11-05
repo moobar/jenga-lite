@@ -4,6 +4,7 @@ DEFAULT_BIN_DIR="_build/default/bin"
 
 shutdown()
 {
+  echo ""
   echo "Exiting... 'JENGA'"
   exit 0
 }
