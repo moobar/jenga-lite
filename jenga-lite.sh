@@ -4,7 +4,7 @@ DEFAULT_BIN_DIR="_build/default/bin"
 
 shutdown()
 {
-  echo "Exiting..."
+  echo "Exiting... 'JENGA'"
   exit 0
 }
 
@@ -30,7 +30,8 @@ copy_binaries_to_root() {
   fi 
 }
 
-inotifywait -m -r -e create,modify,close_write --format '%w%f' . | while read FILE
+echo "Starting 'JENGA' ;)"
+inotifywait -m -r -e create,modify,close_write --format '%w%f' . 2> /dev/null| while read FILE
 do
   if [[ $FILE == *".ml" || $FILE == *".mli" || $FILE == "jbuild" || $FILE == "dune" ]]; then
     now=$(date '+%s')
