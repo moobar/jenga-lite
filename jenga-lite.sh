@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# This script was tested on Debian stretch
+# Prerequistis: inotify
+# Debian: sudo apt-get install inotify-tools
+
 DEFAULT_BIN_DIR="_build/default/bin"
 
 shutdown()
@@ -11,20 +15,21 @@ shutdown()
 
 trap shutdown 2 
 
-now=0
 last_run=0
 
-check_diff() {
-  now=$1
-  last=$2
+# SagarMomin: Maybe change this to take the amount of time, as a parameter,
+# else default to 1 second
+wait_1_second() {
+  now=$(date '+%s')
+  last=$1
 
   diff=$(($now - $last))
   [[ $diff -gt 1 ]] && return
 } 
 
 # This apparently is a little brittle. Dune doesn't like exe files in 
-# the bin/lib directory. So maybe I have to leave the annoying _build 
-# files in place
+# the bin (and maybe lib?) directory. Maybe I shouldn't copy the binaries and
+# just leave them in the _build/ directory
 copy_binaries_to_root() {
   if [[ -d "$DEFAULT_BIN_DIR" ]]; then
     cp "$DEFAULT_BIN_DIR"/*.exe .
@@ -35,13 +40,14 @@ echo "Starting 'JENGA' ;)"
 inotifywait -m -r -e create,modify,close_write --format '%w%f' . 2> /dev/null| while read FILE
 do
   if [[ $FILE == *".ml" || $FILE == *".mli" || $FILE == "jbuild" || $FILE == "dune" ]]; then
-    now=$(date '+%s')
-    if check_diff $now $last_run; then 
+    if wait_1_second $last_run; then 
       dune build
-      last_run=$(date '+%s')
       if [[ $? == 0 ]]; then
-        copy_binaries_to_root
+        echo "$(date -I'seconds'): ""Successfully built! HUZZAH! ;)"
+        # 2018-11-04: Yeah, commenting this out, otherwise dune clean leaves artifacts
+        #copy_binaries_to_root
       fi
+      last_run=$(date '+%s')
     fi
   fi
 done
