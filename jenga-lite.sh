@@ -36,14 +36,25 @@ copy_binaries_to_root() {
   fi 
 }
 
+print_successful_compile() {
+  echo "$(date -I'seconds'): ""Successfully built! HUZZAH! ;)"
+}
+
 echo "Starting 'JENGA' ;)"
+
+# Run dune immediately on startup. 
+dune build
+if [[ $? == 0 ]]; then
+  print_successful_compile
+fi
+
 inotifywait -m -r -e create,modify,close_write --format '%w%f' . 2> /dev/null| while read FILE
 do
   if [[ $FILE == *".ml" || $FILE == *".mli" || $FILE == "jbuild" || $FILE == "dune" ]]; then
     if wait_1_second $last_run; then 
       dune build
       if [[ $? == 0 ]]; then
-        echo "$(date -I'seconds'): ""Successfully built! HUZZAH! ;)"
+        print_successful_compile
         # 2018-11-04: Yeah, commenting this out, otherwise dune clean leaves artifacts
         #copy_binaries_to_root
       fi
