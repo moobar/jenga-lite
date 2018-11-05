@@ -50,7 +50,9 @@ fi
 
 inotifywait -m -r -e create,modify,close_write --format '%w%f' . 2> /dev/null| while read FILE
 do
-  if [[ $FILE == *".ml" || $FILE == *".mli" || $FILE == "jbuild" || $FILE == "dune" ]]; then
+  if [[ $FILE == *".ml" || $FILE == *".mli" || 
+        $FILE == */"jbuild" || $FILE == "jbuild" ||
+        $FILE == */"dune" || $FILE == "dune" ]]; then
     if wait_1_second $last_run; then 
       dune build
       if [[ $? == 0 ]]; then
