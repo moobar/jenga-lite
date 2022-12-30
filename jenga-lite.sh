@@ -13,7 +13,7 @@ shutdown()
 }
 
 
-# SagarMomin: Maybe change this to take the amount of time, as a parameter,
+# sagar: Maybe change this to take the amount of time, as a parameter,
 # else default to 1 second
 wait_1_second() {
   now=$(date '+%s')
